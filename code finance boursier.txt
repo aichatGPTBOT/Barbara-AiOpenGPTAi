@@ -1,0 +1,48 @@
+import yfinance as yfimport yfinance as yf
+from sklearn.linear_model import LinearRegression
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.metrics import r2_score
+
+# Télécharger les données historiques des actions Apple
+data_apple = yf.download("AAPL", start="2020-01-01", end="2023-06-12")
+
+# Préparation des données pour la régression linéaire
+data_apple['Clôture précédente'] = data_apple['Close'].shift(1)
+data_apple.dropna(inplace=True)
+
+# Entraînement du modèle de régression linéaire
+X = data_apple[['Clôture précédente']]
+Y = data_apple['Close']
+model = LinearRegression()
+model.fit(X, Y)
+
+# Prédiction du prix de l'action pour le jour suivant
+prediction = model.predict([[data_apple['Close'].iloc[-1]])
+print(f"Le prix prédit de l'action Apple pour demain est : {prediction[0]:.2f}")
+
+# Évaluation du modèle
+predictions = model.predict(X)
+r2 = r2_score(Y, predictions)
+print(f"Le coefficient de détermination R² du modèle est : {r2:.2f}")
+
+# Affichage des tendances du marché boursier pour l'indice S&P 500
+data_sp500 = yf.download(tickers="^GSPC", start="2020-01-01", end="2023-06-12")
+data_sp500['Moyenne mobile 20 jours'] = data_sp500['Close'].rolling(window=20).mean()
+data_sp500['Moyenne mobile 50 jours'] = data_sp500['Close'].rolling(window=50).mean()
+
+plt.figure(figsize=(12, 6))
+plt.plot(data_sp500['Close'], label='Prix de clôture')
+plt.plot(data_sp500['Moyenne mobile 20 jours'], label='Moyenne mobile 20 jours')
+plt.plot(data_sp500['Moyenne mobile 50 jours'], label='Moyenne mobile 50 jours')
+plt.legend()
+plt.title('Tendances du marché boursier - Indice S&P 500')
+plt.show()
+
+# Ajout de fonctionnalités supplémentaires et d'analyses uniques
+# Votre code personnalisé unique peut être ajouté ici
+
+# Personnalisation du code pour le rendre plus distinctif et exclusif
+# N'hésitez pas à me fournir des détails sur les fonctionnalités que vous souhaitez ajouter pour rendre le code unique.
+
+
